@@ -8,7 +8,7 @@ To show help:
 $ go run parseAny.go -help
 Help Message
 
-Usage: splitcsv [options] input.csv output.csv
+Usage: parseAny [options]
   -help
     	Show usage message
   -i string
