@@ -1,3 +1,5 @@
+<?target instructions?>
+<!this-is-a-directive>
 <Person>
 <FullName>Grace R. Emlin</FullName>
 <Company>Example Inc.</Company>
@@ -13,4 +15,5 @@
 </Group>
 <City>Hanga Roa</City>
 <State>Easter Island</State>
+<!-- this is a comment -->
 </Person>

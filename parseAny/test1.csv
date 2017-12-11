@@ -1,4 +1,6 @@
 Depth,Type,Name,Text,Attribute 1,Value 1
+0,ProcInst,target,instructions
+0,Directive,this-is-a-directive
 0,Start,Person,
 1,Start,FullName,
 2,CharData,FullName,Grace R. Emlin
@@ -30,4 +32,5 @@ Depth,Type,Name,Text,Attribute 1,Value 1
 1,Start,State,
 2,CharData,State,Easter Island
 1,End,State
+1,Comment,this is a comment
 0,End,Person

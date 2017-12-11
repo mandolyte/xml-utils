@@ -22,9 +22,11 @@ $
 
 Example:
 ```
-$ go run parseAny.go -i test1.xml -o text1.csv -maxattr 1
-$ cat text1.csv 
+$ go run parseAny.go -i test1.xml -o test1.csv -maxattr 1
+$ cat test1.csv 
 Depth,Type,Name,Text,Attribute 1,Value 1
+0,ProcInst,target,instructions
+0,Directive,this-is-a-directive
 0,Start,Person,
 1,Start,FullName,
 2,CharData,FullName,Grace R. Emlin
@@ -56,6 +58,7 @@ Depth,Type,Name,Text,Attribute 1,Value 1
 1,Start,State,
 2,CharData,State,Easter Island
 1,End,State
+1,Comment,this is a comment
 0,End,Person
 $ 
 ```

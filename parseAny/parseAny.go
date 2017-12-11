@@ -78,11 +78,11 @@ func main() {
 		case xml.CharData:
 			processCharData(w, lastStartName, xml.CharData(t), depth)
 		case xml.Comment:
-			processComment(xml.Comment(t), depth)
+			processComment(w, xml.Comment(t), depth)
 		case xml.ProcInst:
-			processProcInst(xml.ProcInst(t), depth)
+			processProcInst(w, xml.ProcInst(t), depth)
 		case xml.Directive:
-			processDirective(xml.Directive(t), depth)
+			processDirective(w, xml.Directive(t), depth)
 		default:
 			fmt.Println("Unknown!?")
 		}
@@ -117,7 +117,7 @@ func processEnd(w *csv.Writer, e xml.EndElement, depth int) {
 
 	err := w.Write(outcells)
 	if err != nil {
-		log.Fatal("w.Write() start row error:" + err.Error())
+		log.Fatal("w.Write() end row error:" + err.Error())
 	}
 }
 func processCharData(w *csv.Writer, ename string, e xml.CharData, depth int) {
@@ -133,21 +133,46 @@ func processCharData(w *csv.Writer, ename string, e xml.CharData, depth int) {
 
 	err := w.Write(outcells)
 	if err != nil {
-		log.Fatal("w.Write() start row error:" + err.Error())
+		log.Fatal("w.Write() chardata row error:" + err.Error())
 	}
 }
-func processComment(e xml.Comment, depth int) {
-	// todo
+func processComment(w *csv.Writer, e xml.Comment, depth int) {
+	var outcells []string
+	outcells = append(outcells, fmt.Sprintf("%v", depth))
+	outcells = append(outcells, "Comment")
+	outcells = append(outcells, strings.TrimSpace(string(e)))
+
+	err := w.Write(outcells)
+	if err != nil {
+		log.Fatal("w.Write() comment row error:" + err.Error())
+	}
 }
-func processProcInst(e xml.ProcInst, depth int) {
-	// todo
+func processProcInst(w *csv.Writer, e xml.ProcInst, depth int) {
+	var outcells []string
+	outcells = append(outcells, fmt.Sprintf("%v", depth))
+	outcells = append(outcells, "ProcInst")
+	outcells = append(outcells, e.Target)
+	outcells = append(outcells, string(e.Inst))
+
+	err := w.Write(outcells)
+	if err != nil {
+		log.Fatal("w.Write() procinst row error:" + err.Error())
+	}
 }
-func processDirective(e xml.Directive, depth int) {
-	// todo
+func processDirective(w *csv.Writer, e xml.Directive, depth int) {
+	var outcells []string
+	outcells = append(outcells, fmt.Sprintf("%v", depth))
+	outcells = append(outcells, "Directive")
+	outcells = append(outcells, strings.TrimSpace(string(e)))
+
+	err := w.Write(outcells)
+	if err != nil {
+		log.Fatal("w.Write() directive row error:" + err.Error())
+	}
 }
 
 func usage(msg string) {
 	fmt.Println(msg + "\n")
-	fmt.Print("Usage: splitcsv [options] input.csv output.csv\n")
+	fmt.Print("Usage: parseAny [options]\n")
 	flag.PrintDefaults()
 }
