@@ -62,3 +62,24 @@ Depth,Type,Name,Text,Attribute 1,Value 1
 0,End,Person
 $ 
 ```
+
+A performance test:
+```
+$ time go run parseAny.go \
+  -i $HOME/data/leading_causes_of_death_us.xml \
+  -o $HOME/data/leading_causes_of_death_us.csv
+
+real	0m1.307s
+user	0m1.108s
+sys	0m0.202s
+
+$ cd $HOME/data
+$ ls -al lea*
+-rw-r--r-- 1 cecil cecil 8311631 Dec 12 10:46 leading_causes_of_death_us.csv
+-rw-r--r-- 1 cecil cecil 5027058 Dec 11 07:35 leading_causes_of_death_us.xml
+$ wc -l leading_causes_of_death_us.csv
+300187 leading_causes_of_death_us.csv
+$ 
+
+
+```
