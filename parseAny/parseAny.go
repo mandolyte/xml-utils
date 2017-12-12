@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -37,20 +36,19 @@ func main() {
 	}
 
 	// open input file and read into memory
-	bytes, err := ioutil.ReadFile(*input)
-	if err != nil {
-		log.Fatal("ioutil.ReadFile() error:" + err.Error())
+	fi, fierr := os.Open(*input)
+	if fierr != nil {
+		log.Fatal("os.Open() Error:" + fierr.Error())
 	}
-	// convert byte slice to a string
-	r := strings.NewReader(string(bytes))
+	defer fi.Close()
 
 	// Output the headers
-	headers := []string{"Depth", "Type", "Name", "Text"}
+	headers := []string{"Depth", "Type", "Space", "Name", "Text"}
 	for i := 0; i < *maxattr; i++ {
 		headers = append(headers, fmt.Sprintf("Attribute %v", i+1))
 		headers = append(headers, fmt.Sprintf("Value %v", i+1))
 	}
-	err = w.Write(headers)
+	err := w.Write(headers)
 	if err != nil {
 		log.Fatal("w.Write() headers error:" + err.Error())
 	}
@@ -58,7 +56,7 @@ func main() {
 	// start decode loop and track depth for future
 	// pretty printing purposes
 	lastStartName := ""
-	decoder := xml.NewDecoder(r)
+	decoder := xml.NewDecoder(fi)
 	depth := 0
 	for {
 		token, err := decoder.Token()
@@ -94,6 +92,7 @@ func processStart(w *csv.Writer, e xml.StartElement, depth int) string {
 	var outcells []string
 	outcells = append(outcells, fmt.Sprintf("%v", depth))
 	outcells = append(outcells, "Start")
+	outcells = append(outcells, e.Name.Space)
 	outcells = append(outcells, e.Name.Local)
 	outcells = append(outcells, "") // text val column
 
@@ -113,6 +112,7 @@ func processEnd(w *csv.Writer, e xml.EndElement, depth int) {
 	var outcells []string
 	outcells = append(outcells, fmt.Sprintf("%v", depth))
 	outcells = append(outcells, "End")
+	outcells = append(outcells, e.Name.Space)
 	outcells = append(outcells, e.Name.Local)
 
 	err := w.Write(outcells)
@@ -128,6 +128,7 @@ func processCharData(w *csv.Writer, ename string, e xml.CharData, depth int) {
 	var outcells []string
 	outcells = append(outcells, fmt.Sprintf("%v", depth))
 	outcells = append(outcells, "CharData")
+	outcells = append(outcells, "")
 	outcells = append(outcells, ename)
 	outcells = append(outcells, txt)
 
@@ -140,6 +141,7 @@ func processComment(w *csv.Writer, e xml.Comment, depth int) {
 	var outcells []string
 	outcells = append(outcells, fmt.Sprintf("%v", depth))
 	outcells = append(outcells, "Comment")
+	outcells = append(outcells, "")
 	outcells = append(outcells, strings.TrimSpace(string(e)))
 
 	err := w.Write(outcells)
@@ -151,6 +153,7 @@ func processProcInst(w *csv.Writer, e xml.ProcInst, depth int) {
 	var outcells []string
 	outcells = append(outcells, fmt.Sprintf("%v", depth))
 	outcells = append(outcells, "ProcInst")
+	outcells = append(outcells, "")
 	outcells = append(outcells, e.Target)
 	outcells = append(outcells, string(e.Inst))
 
@@ -163,6 +166,7 @@ func processDirective(w *csv.Writer, e xml.Directive, depth int) {
 	var outcells []string
 	outcells = append(outcells, fmt.Sprintf("%v", depth))
 	outcells = append(outcells, "Directive")
+	outcells = append(outcells, "")
 	outcells = append(outcells, strings.TrimSpace(string(e)))
 
 	err := w.Write(outcells)
